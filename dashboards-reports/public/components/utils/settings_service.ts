@@ -10,6 +10,7 @@
  */
 
 import { IUiSettingsClient } from '../../../../../src/core/public';
+import { DATA_REPORT_CONFIG } from '../../../server/routes/utils/constants';
 
 let uiSettings: IUiSettingsClient;
 
@@ -19,5 +20,20 @@ export const uiSettingsService = {
   },
   get: (key: string, defaultOverride?: any) => {
     return uiSettings?.get(key, defaultOverride) || '';
+  },
+  getSearchParams: function () {
+    const rawTimeZone = this.get('dateFormat:tz');
+    const timezone =
+      !rawTimeZone || rawTimeZone === 'Browser'
+        ? Intl.DateTimeFormat().resolvedOptions().timeZone
+        : rawTimeZone;
+    const dateFormat =
+      this.get('dateFormat') || DATA_REPORT_CONFIG.excelDateFormat;
+    const csvSeparator = this.get('csv:separator');
+    return {
+      timezone,
+      dateFormat,
+      csvSeparator,
+    };
   },
 };

@@ -28,7 +28,6 @@ import {
   REPORT_TYPE,
   REPORT_STATE,
   DELIVERY_TYPE,
-  DATA_REPORT_CONFIG,
   EXTRA_HEADERS,
 } from '../utils/constants';
 
@@ -69,7 +68,9 @@ export const createReport = async (
   // @ts-ignore
   const timezone = request.query.timezone;
   // @ts-ignore
-  const dateFormat = request.query.dateFormat || DATA_REPORT_CONFIG.excelDateFormat;
+  const dateFormat = request.query.dateFormat;
+  // @ts-ignore
+  const csvSeparator = request.query.csvSeparator;
   const {
     basePath,
     serverInfo: { protocol, port, hostname },
@@ -97,6 +98,7 @@ export const createReport = async (
         report,
         opensearchClient,
         dateFormat,
+        csvSeparator,
         isScheduledTask
       );
     } else {
