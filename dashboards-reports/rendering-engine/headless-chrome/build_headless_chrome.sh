@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Initializes a Linux environment. This need only be done once per
 # machine. The OS needs to be a flavor that supports apt get, such as Ubuntu.
 
@@ -37,12 +39,11 @@ use_gio = false
 fi
 }
 
-ARGC=("$#")
-
-if [ $ARGC -lt 1 ];
+if [ "$#" -lt 1 ];
 then
    echo "format: build_headless_chrome.sh {chrome_source_version} (arch_name)"
    echo "Mac x64: ./build_headless_chrome.sh  312d84c8ce62810976feda0d3457108a6dfff9e6"
+   echo "Mac arm64: ./build_headless_chrome.sh  312d84c8ce62810976feda0d3457108a6dfff9e6 arm64"
    echo "Linux x64: ./build_headless_chrome.sh 312d84c8ce62810976feda0d3457108a6dfff9e6"
    echo "Linux arm64: ./build_headless_chrome.sh 312d84c8ce62810976feda0d3457108a6dfff9e6 arm64"
    exit
@@ -50,7 +51,7 @@ fi
 
 source_version=$1
 
-if [ $ARGC -lt 2 ];
+if [ "$#" -lt 2 ];
 then
    arch_name="x64"
 else
@@ -61,10 +62,6 @@ if ! [ -x "$(command -v python)" ]; then
   echo "Python is not found, please install python or setup python environment properly"
   exit
 fi
-
-# Launch the cross-platform init script using a relative path
-# from this script's location.
-mkdir -p ~/chromium
 
 if [ "$#" -eq 2 ]; then
   arch_name=$2
@@ -93,21 +90,20 @@ echo "arch_name = " $arch_name
 generateArgs $platform_name
 
 # Configure git
-git config --global core.autocrlf false
-git config --global core.filemode false
-git config --global branch.autosetuprebase always
-cd chromium
+git config core.autocrlf false
+git config core.filemode false
+git config branch.autosetuprebase always
 
 # Grab Chromium's custom build tools, if they aren't already installed
 # (On Windows, they are installed before this Python script is run)
 if ! [ -d "depot_tools" ]
 then
-  git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+  git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git --depth=1
 fi
 
 # Put depot_tools on the path so we can properly run the fetch command
-export PATH="$PATH:${HOME}/chromium/depot_tools"
-echo ${HOME}/chromium/depot_tools
+export PATH="$PWD/depot_tools:$PATH"
+ls ${PWD}/depot_tools
 
 # Fetch the Chromium source code
 
@@ -127,12 +123,12 @@ fetch chromium
 
 # Build Linux deps
 
-cd src 
-if [[ arch_name -eq "arm64" ]]; then
-  ./build/linux/sysroot_scripts/install-sysroot.py --arch=$arch_name
-fi
+cd src
 
-if [[ platform_name -eq "linux" ]]; then
+if [[ "$platform_name" = "linux" ]]; then
+  if [[ "$arch_name" = "arm64" ]]; then
+    ./build/linux/sysroot_scripts/install-sysroot.py --arch=$arch_name
+  fi
   ./build/install-build-deps.sh
 fi
 
@@ -156,13 +152,11 @@ echo "current_folder :" $current_folder
 platform_build_args=$current_folder'/args.gn'
 #platform_build_args=$current_folder/chromium/build_chromium/$platform_name/args.gn
 
-outputDir='headless'
 mkdir -p 'out/headless'
 
 echo "platform_build_args :" $platform_build_args
 
 cp $platform_build_args 'out/headless/args.gn'
-echo "platform_build_args :" $platform_build_args
 echo 'target_cpu = '\"$arch_name\"  >> 'out/headless/args.gn'
 
 gn gen out/headless

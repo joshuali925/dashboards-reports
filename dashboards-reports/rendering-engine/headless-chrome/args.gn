@@ -1,0 +1,21 @@
+#args configuration
+
+icu_use_data_file = false
+v8_use_external_startup_data = false
+remove_webcore_debug_symbols = true
+use_kerberos = false
+use_libpci = false
+use_pulseaudio = false
+use_udev = false
+is_debug = false
+symbol_level = 0
+is_component_build = false
+enable_nacl = false
+enable_print_preview = false
+enable_basic_printing = false
+enable_remoting = false
+use_alsa = false
+use_cups = false
+use_dbus = false
+use_gio = false
+
