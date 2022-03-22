@@ -141,7 +141,7 @@ echo 'Building Chromium '  $source_version  ' for '  $arch_name
 echo 'Syncing source code'
 
 
-git checkout -f master
+git checkout -f main
 git fetch -f origin
 gclient sync --with_branch_heads --with_tags --jobs 16
 git checkout $source_version
