@@ -157,9 +157,14 @@ echo 'Syncing source code'
 git checkout -f main
 git fetch -f origin
 gclient sync --with_branch_heads --with_tags --jobs 16
+
 git checkout $source_version
 gclient sync --with_branch_heads --with_tags --jobs 16
 gclient runhooks
+if [[ "$platform_name" = "linux" ]] && [[ "$arch_name" = "arm64" ]]; then
+  ./build/linux/sysroot_scripts/install-sysroot.py --arch=$arch_name
+fi
+
 echo "current_folder :" $current_folder
 
 platform_build_args=$current_folder'/args.gn'
