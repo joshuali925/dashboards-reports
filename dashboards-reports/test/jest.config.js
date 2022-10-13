@@ -3,6 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+//@ts-check
+
+const { execSync } = require('child_process');
+const os = require('os');
+
 const TZ = 'America/Los_Angeles';
 if (os.platform() === 'win32') {
   process.env.STORED_TZ = execSync('tzutil /g').toString();
