@@ -59,11 +59,6 @@ jobs:
           max_attempts: 3
           command: cd OpenSearch-Dashboards/plugins/${{ env.PLUGIN_NAME }} && yarn osd bootstrap
 
-      # - name: Set timezone
-      #   uses: szenius/set-timezone@v1.0
-      #   with:
-      #     timezoneWindows: America/Los_Angeles
-
       - name: Test
         uses: nick-invision/retry@v1
         with:
