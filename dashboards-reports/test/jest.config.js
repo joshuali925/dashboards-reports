@@ -3,7 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-process.env.TZ = 'America/Los_Angeles';
+const TZ = 'America/Los_Angeles';
+if (os.platform() === 'win32') {
+  process.env.STORED_TZ = execSync('tzutil /g').toString();
+  execSync(`tzutil /s "${TZ}"`);
+  console.warn(`Windows timezone changed from "${process.env.STORED_TZ}" to "${TZ}"\nRun \`tzutil /s "${process.env.STORED_TZ}"\` to set it back manually.`);
+} else {
+  process.env.TZ = TZ;
+}
 
 module.exports = {
   rootDir: '../',
