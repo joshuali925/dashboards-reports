@@ -47,25 +47,24 @@ jobs:
           Expand-Archive -Path 'chromium-windows-x64.zip'
           rd chromium-windows-x64.zip
 
-      - name: Test
+      - name: Test path
         run: |
           pwd
           dir
-          ls -al
 
       - name: OpenSearch Dashboards Plugin Bootstrap
         uses: nick-invision/retry@v1
         with:
           timeout_minutes: 30
           max_attempts: 3
-          command: cd OpenSearch-Dashboards/plugins/${{ env.PLUGIN_NAME }}; yarn osd bootstrap
+          command: cd OpenSearch-Dashboards/plugins/${{ env.PLUGIN_NAME }} && yarn osd bootstrap
 
       - name: Test
         uses: nick-invision/retry@v1
         with:
           timeout_minutes: 30
           max_attempts: 3
-          command: cd OpenSearch-Dashboards/plugins/${{ env.PLUGIN_NAME }}; yarn test
+          command: cd OpenSearch-Dashboards/plugins/${{ env.PLUGIN_NAME }} && yarn test
 
       - name: Build Artifact
         run: |
