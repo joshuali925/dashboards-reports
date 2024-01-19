@@ -54,8 +54,8 @@ jacocoTestReport {
     sourceDirectories.from = "src/main/kotlin"
     classDirectories.from = sourceSets.main.output
     reports {
-        html.enabled = true // human readable
-        xml.enabled = true // for coverlay
+        html.required = true // human readable
+        xml.required = true // for coverlay
     }
 }
 
@@ -64,10 +64,7 @@ allprojects{
         jacocoTestReport.dependsOn integTest
 
         testClusters.integTest {
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                // Replacing build with absolute path to fix the error "error opening zip file or JAR manifest missing : /build/tmp/expandedArchives/..../jacocoagent.jar"
-                jvmArgs " ${dummyIntegTest.jacoco.getAsJvmArg()}".replace('build',"${buildDir}")
-            } else {
+            if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
                 jvmArgs " ${dummyIntegTest.jacoco.getAsJvmArg()}".replace('javaagent:','javaagent:/')
             }
             systemProperty 'com.sun.management.jmxremote', "true"
